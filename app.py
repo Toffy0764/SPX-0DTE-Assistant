@@ -35,10 +35,17 @@ trend = st.selectbox(
     ["positivo", "neutro", "negativo"]
 )
 
-sopra_vwap = st.selectbox(
-    "Prezzo sopra VWAP",
-    ["si", "no"]
+vwap = st.number_input(
+    "VWAP giornata",
+    value=6480
 )
+
+risultato_vwap = analizza_vwap(
+    spx,
+    vwap
+)
+
+sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
 
 evento_macro = st.selectbox(
     "Evento macro importante",
