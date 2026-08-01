@@ -1,13 +1,23 @@
-def verifica_vwap(spx, vwap):
+def analizza_vwap(spx, vwap):
+
+    distanza_punti = spx - vwap
+    distanza_percentuale = (distanza_punti / vwap) * 100
 
     if spx > vwap:
-        return {
-            "sopra_vwap": True,
-            "segnale": "Sopra VWAP"
-        }
-
+        posizione = "Sopra VWAP"
     else:
-        return {
-            "sopra_vwap": False,
-            "segnale": "Sotto VWAP"
-        }
+        posizione = "Sotto VWAP"
+
+    if 0 <= distanza_percentuale <= 0.5:
+        segnale = "Zona favorevole"
+    elif distanza_percentuale > 0.5:
+        segnale = "Possibile estensione"
+    else:
+        segnale = "Debolezza"
+
+    return {
+        "posizione": posizione,
+        "distanza_punti": round(distanza_punti, 1),
+        "distanza_percentuale": round(distanza_percentuale, 2),
+        "segnale": segnale
+    }
