@@ -35,25 +35,7 @@ sopra_vwap = st.selectbox(
 evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
-)
-
-range_normale = st.selectbox(
-    "Range normale",
-    ["si", "no"]
-)
-
-gex = st.selectbox(
-    "GEX",
-    ["positivo", "neutro", "negativo"]
-)
-
-capitale = st.number_input(
-    "Capitale disponibile",
-    value=100000
-)
-
-
-if st.button("ANALIZZA GIORNATA"):
+)if st.button("ANALIZZA GIORNATA"):
 
     risultato_score = calcola_score(
         vix,
@@ -71,6 +53,11 @@ if st.button("ANALIZZA GIORNATA"):
         vix,
         range_normale == "si",
         gex
+    )
+
+    risultato_strike = seleziona_strike(
+        6500,
+        risultato_strategia["strategia"]
     )
 
     rischio = controlla_rischio(
@@ -98,22 +85,39 @@ if st.button("ANALIZZA GIORNATA"):
         "Strategia:",
         risultato_strategia["strategia"]
     )
-risultato_strike = seleziona_strike(
-    risultato_score["score"],
-    risultato_strategia["strategia"]
-)
 
-st.subheader("TRADE PROPOSTO")
-
-st.write(
-    risultato_strike
-)     
     st.write(
         "Motivazione:",
         risultato_strategia["motivazione"]
+    )
+
+    st.subheader("TRADE PROPOSTO")
+
+    st.write(
+        risultato_strike
     )
 
     st.write(
         "Risk Manager:",
         rischio["stato"]
     )
+
+range_normale = st.selectbox(
+    "Range normale",
+    ["si", "no"]
+)
+
+gex = st.selectbox(
+    "GEX",
+    ["positivo", "neutro", "negativo"]
+)
+
+capitale = st.number_input(
+    "Capitale disponibile",
+    value=100000
+)
+
+
+
+
+    
