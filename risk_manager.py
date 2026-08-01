@@ -1,12 +1,23 @@
-def controlla_rischio(capitale, rischio_percentuale, rischio_trade):
+def controlla_rischio(capitale, rischio_percentuale, rischio_trade, moltiplicatore_size=1):
 
     """
-    Controllo rischio per strategie con opzioni.
+    Controllo rischio con adattamento evento macro.
     """
 
-    rischio_massimo = capitale * rischio_percentuale / 100
+    rischio_percentuale_effettivo = (
+        rischio_percentuale * moltiplicatore_size
+    )
 
-    rapporto_rischio = rischio_trade / rischio_massimo if rischio_massimo > 0 else 0
+    rischio_massimo = (
+        capitale * rischio_percentuale_effettivo / 100
+    )
+
+    rapporto_rischio = (
+        rischio_trade / rischio_massimo
+        if rischio_massimo > 0
+        else 0
+    )
+
 
     if rischio_trade <= rischio_massimo:
 
@@ -21,13 +32,17 @@ def controlla_rischio(capitale, rischio_percentuale, rischio_trade):
 
         motivo = "Rischio compatibile con capitale"
 
+
     else:
 
         stato = "BLOCCATO"
 
         contratti = 0
 
-        motivo = "Rischio minimo della strategia superiore al limite consentito"
+        motivo = (
+            "Rischio superiore al limite "
+            "considerando il contesto macro"
+        )
 
 
     return {
@@ -36,5 +51,6 @@ def controlla_rischio(capitale, rischio_percentuale, rischio_trade):
         "rapporto_rischio": round(rapporto_rischio, 2),
         "stato": stato,
         "contratti": contratti,
-        "motivo": motivo
+        "motivo": motivo,
+        "moltiplicatore_size": moltiplicatore_size
     }
