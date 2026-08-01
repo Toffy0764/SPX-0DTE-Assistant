@@ -137,11 +137,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     decisione_finale = genera_decisione(
-        risultato_score["score"],
-        risultato_strategia["strategia"],
-        rischio,
-        analisi_macro
-    )
+    risultato_score["score"],
+    risultato_strategia["strategia"],
+    rischio,
+    analisi_macro,
+    trade_adattato
+)
 
 
     # =========================
