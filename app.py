@@ -14,16 +14,16 @@ st.set_page_config(
     layout="centered"
 )
 
+
 st.title("SPX 0DTE Assistant")
-
-st.write("Analisi giornaliera del mercato")
+st.write("Professional Decision Engine")
 
 
 # =========================
-# INPUT MERCATO
+# INPUT
 # =========================
 
-st.subheader("Dati mercato")
+st.subheader("📊 Dati mercato")
 
 spx = st.number_input(
     "SPX attuale",
@@ -32,13 +32,11 @@ spx = st.number_input(
 
 vwap = st.number_input(
     "VWAP giornata",
-    value=6480,
-    key="vwap_input"
+    value=6480
 )
 
 vix = st.number_input(
     "VIX",
-    min_value=0.0,
     value=18.0
 )
 
@@ -77,7 +75,7 @@ capitale = st.number_input(
 # ANALISI
 # =========================
 
-if st.button("ANALIZZA GIORNATA"):
+if st.button("🚀 ANALIZZA GIORNATA"):
 
     risultato_vwap = analizza_vwap(
         spx,
@@ -137,47 +135,69 @@ if st.button("ANALIZZA GIORNATA"):
 
 
     # =========================
-    # RISULTATI
+    # DASHBOARD
     # =========================
 
     st.divider()
 
-    st.subheader("ANALISI VWAP")
+    st.subheader("📈 MARKET STATUS")
+
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.metric(
+            "SCORE",
+            f'{risultato_score["score"]}/100'
+        )
+
+
+    with col2:
+
+        st.metric(
+            "STATO",
+            risultato_score["stato"]
+        )
+
+
+    if risultato_score["stato"] == "VERDE":
+
+        st.success(
+            "🟢 MERCATO FAVOREVOLE"
+        )
+
+    elif risultato_score["stato"] == "GIALLO":
+
+        st.warning(
+            "🟡 ATTENZIONE"
+        )
+
+    else:
+
+        st.error(
+            "🔴 NON OPERARE"
+        )
+
+
+    st.divider()
+
+
+    st.subheader("📊 ANALISI VWAP")
 
     st.write(
         risultato_vwap
     )
 
 
-    st.subheader("EVENTO MACRO")
+    st.subheader("🌍 EVENTO MACRO")
 
     st.write(
         analisi_macro
     )
 
 
-    st.subheader("RISULTATO")
-
-    st.write(
-        "Score:",
-        risultato_score["score"],
-        "/100"
-    )
-
-    st.write(
-        "Stato:",
-        risultato_score["stato"]
-    )
-
-
-    st.subheader("Motivazioni")
-
-    st.write(
-        risultato_score["motivi"]
-    )
-
-
-    st.subheader("STRATEGIA")
+    st.subheader("🎯 STRATEGIA")
 
     st.write(
         risultato_strategia["strategia"]
@@ -188,22 +208,39 @@ if st.button("ANALIZZA GIORNATA"):
     )
 
 
-    st.subheader("TRADE PROPOSTO")
+    st.subheader("💵 TRADE PROPOSTO")
 
     st.write(
         risultato_strike
     )
 
 
-    st.subheader("RISK MANAGER")
+    st.subheader("🛡 RISK MANAGER")
 
     st.write(
         rischio
     )
 
 
-    st.subheader("DECISIONE FINALE")
+    st.divider()
+
+
+    st.subheader("🚦 DECISIONE FINALE")
+
+
+    if decisione_finale["decisione"] == "NON OPERARE":
+
+        st.error(
+            "❌ NON OPERARE"
+        )
+
+    else:
+
+        st.success(
+            decisione_finale["decisione"]
+        )
+
 
     st.write(
-        decisione_finale
+        decisione_finale["motivi"]
     )
