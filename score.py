@@ -50,9 +50,12 @@ def calcola_score(vix, trend, sopra_vwap, evento_macro, range_normale, gex):
     else:
         stato = "ROSSO"
 
-    return {
-        "score": score,
-        "stato": stato,
-        "motivi": motivi
+  return {
+    "score": score,
+    "stato": stato,
+    "motivi": motivi,
+    "dettaglio": {
+        "fattori": motivi
     }
+}
  
