@@ -83,7 +83,14 @@ if st.button("ANALIZZA GIORNATA"):
         vwap
     )
 
-    sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
+    sopra_vwap = (
+        risultato_vwap["posizione"] == "Sopra VWAP"
+    )
+
+
+    analisi_macro = controlla_evento_macro(
+        evento_macro_livello
+    )
 
 
     risultato_score = calcola_score(
@@ -115,12 +122,8 @@ if st.button("ANALIZZA GIORNATA"):
     rischio = controlla_rischio(
         capitale,
         0.5,
-        risultato_strike.get("rischio", 0)
-    )
-
-
-    analisi_macro = controlla_evento_macro(
-        evento_macro_livello
+        risultato_strike.get("rischio", 0),
+        analisi_macro["moltiplicatore_size"]
     )
 
 
@@ -134,6 +137,13 @@ if st.button("ANALIZZA GIORNATA"):
 
     st.write(
         risultato_vwap
+    )
+
+
+    st.subheader("EVENTO MACRO")
+
+    st.write(
+        analisi_macro
     )
 
 
@@ -180,11 +190,4 @@ if st.button("ANALIZZA GIORNATA"):
 
     st.write(
         rischio
-    )
-
-
-    st.subheader("EVENTO MACRO")
-
-    st.write(
-        analisi_macro
     )
