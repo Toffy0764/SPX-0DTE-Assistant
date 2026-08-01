@@ -1,10 +1,8 @@
 def adatta_trade(trade, rischio_massimo):
     """
-    Cerca di adattare il trade quando il rischio
-    supera il limite consentito.
+    Adatta il trade riducendo l'ampiezza dello spread
+    quando il rischio supera il limite.
     """
-
-    risultato = {}
 
     rischio_attuale = trade.get("rischio", 0)
 
@@ -12,42 +10,83 @@ def adatta_trade(trade, rischio_massimo):
 
         return {
             "stato": "OK",
-            "messaggio": "Trade già compatibile con il rischio",
+            "messaggio": "Trade già compatibile",
             "trade": trade
         }
 
 
-    # Riduzione spread
-    if trade.get("strategia") == "BULL PUT SPREAD":
+    strategia = trade.get("strategia")
 
-        risultato = {
+
+    if strategia == "BULL PUT SPREAD":
+
+        vendita = trade.get("vendita", "")
+
+        try:
+            strike = int(
+                vendita.replace("PUT ", "")
+            )
+
+            nuovo_acquisto = strike - 5
+
+        except:
+
+            nuovo_acquisto = "da definire"
+
+
+        return {
+
             "stato": "ADATTATO",
-            "strategia": "BULL PUT SPREAD",
-            "vendita": trade["vendita"],
-            "acquisto": "Ridotto spread",
-            "rischio_stimato": round(rischio_attuale / 2, 0),
-            "messaggio": "Riduzione rischio tramite spread più stretto"
+            "strategia": strategia,
+            "vendita": vendita,
+            "acquisto": f"PUT {nuovo_acquisto}",
+            "rischio_stimato": round(
+                rischio_attuale / 2,
+                0
+            ),
+            "messaggio":
+            "Spread ridotto da 10 a 5 punti"
+
         }
 
 
-    elif trade.get("strategia") == "BEAR CALL SPREAD":
+    if strategia == "BEAR CALL SPREAD":
 
-        risultato = {
+        vendita = trade.get("vendita", "")
+
+        try:
+
+            strike = int(
+                vendita.replace("CALL ", "")
+            )
+
+            nuovo_acquisto = strike + 5
+
+        except:
+
+            nuovo_acquisto = "da definire"
+
+
+        return {
+
             "stato": "ADATTATO",
-            "strategia": "BEAR CALL SPREAD",
-            "vendita": trade["vendita"],
-            "acquisto": "Ridotto spread",
-            "rischio_stimato": round(rischio_attuale / 2, 0),
-            "messaggio": "Riduzione rischio tramite spread più stretto"
+            "strategia": strategia,
+            "vendita": vendita,
+            "acquisto": f"CALL {nuovo_acquisto}",
+            "rischio_stimato": round(
+                rischio_attuale / 2,
+                0
+            ),
+            "messaggio":
+            "Spread ridotto da 10 a 5 punti"
+
         }
 
 
-    else:
+    return {
 
-        risultato = {
-            "stato": "NON POSSIBILE",
-            "messaggio": "Nessun adattamento disponibile"
-        }
+        "stato": "NON POSSIBILE",
+        "messaggio":
+        "Nessun adattamento disponibile"
 
-
-    return risultato
+    }
