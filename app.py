@@ -15,7 +15,10 @@ st.title("SPX 0DTE Assistant")
 st.write("Analisi giornaliera del mercato")
 
 # INPUT MERCATO
-
+spx = st.number_input(
+    "SPX attuale",
+    value=6500
+)
 vix = st.number_input(
     "VIX",
     min_value=0.0,
@@ -58,7 +61,7 @@ if st.button("ANALIZZA GIORNATA"):
     )
 
     risultato_strike = seleziona_strike(
-        6500,
+        spx,
         risultato_strategia["strategia"]
     )
 
