@@ -4,6 +4,7 @@ from score import calcola_score
 from strategy import scegli_strategia
 from risk_manager import controlla_rischio
 from strikes import seleziona_strike
+from vwap import verifica_vwap
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
@@ -18,6 +19,10 @@ st.write("Analisi giornaliera del mercato")
 spx = st.number_input(
     "SPX attuale",
     value=6500
+)
+vwap = st.number_input(
+    "VWAP giornata",
+    value=6480
 )
 vix = st.number_input(
     "VIX",
