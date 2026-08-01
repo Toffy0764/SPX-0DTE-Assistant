@@ -39,7 +39,20 @@ evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
 )
+range_normale = st.selectbox(
+    "Range normale",
+    ["si", "no"]
+)
 
+gex = st.selectbox(
+    "GEX",
+    ["positivo", "neutro", "negativo"]
+)
+
+capitale = st.number_input(
+    "Capitale disponibile",
+    value=100000
+)
 if st.button("ANALIZZA GIORNATA"):
 
     risultato_score = calcola_score(
