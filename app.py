@@ -4,7 +4,7 @@ from score import calcola_score
 from strategy import scegli_strategia
 from risk_manager import controlla_rischio
 from strikes import seleziona_strike
-from vwap import verifica_vwap
+from vwap import analizza_vwap
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
