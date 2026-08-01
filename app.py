@@ -7,6 +7,7 @@ from strikes import seleziona_strike
 from vwap import analizza_vwap
 from macro import controlla_evento_macro
 from decision import genera_decisione
+from adjustment import adatta_trade
 
 
 st.set_page_config(
@@ -16,7 +17,7 @@ st.set_page_config(
 
 
 st.title("SPX 0DTE Assistant")
-st.write("Professional Decision Engine")
+st.write("Professional Decision Engine v1.2")
 
 
 # =========================
@@ -24,6 +25,7 @@ st.write("Professional Decision Engine")
 # =========================
 
 st.subheader("📊 Dati mercato")
+
 
 spx = st.number_input(
     "SPX attuale",
@@ -77,10 +79,12 @@ capitale = st.number_input(
 
 if st.button("🚀 ANALIZZA GIORNATA"):
 
+
     risultato_vwap = analizza_vwap(
         spx,
         vwap
     )
+
 
     sopra_vwap = (
         risultato_vwap["posizione"] == "Sopra VWAP"
@@ -126,6 +130,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
     )
 
 
+    trade_adattato = adatta_trade(
+        risultato_strike,
+        rischio["rischio_massimo"]
+    )
+
+
     decisione_finale = genera_decisione(
         risultato_score["score"],
         risultato_strategia["strategia"],
@@ -144,6 +154,7 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     col1, col2 = st.columns(2)
+
 
     with col1:
 
@@ -219,6 +230,13 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     st.write(
         rischio
+    )
+
+
+    st.subheader("🔧 TRADE ADJUSTMENT")
+
+    st.write(
+        trade_adattato
     )
 
 
