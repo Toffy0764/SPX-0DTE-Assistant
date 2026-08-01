@@ -6,6 +6,7 @@ from risk_manager import controlla_rischio
 from strikes import seleziona_strike
 from vwap import analizza_vwap
 from macro import controlla_evento_macro
+from decision import genera_decisione
 
 
 st.set_page_config(
@@ -127,6 +128,14 @@ if st.button("ANALIZZA GIORNATA"):
     )
 
 
+    decisione_finale = genera_decisione(
+        risultato_score["score"],
+        risultato_strategia["strategia"],
+        rischio,
+        analisi_macro
+    )
+
+
     # =========================
     # RISULTATI
     # =========================
@@ -190,4 +199,11 @@ if st.button("ANALIZZA GIORNATA"):
 
     st.write(
         rischio
+    )
+
+
+    st.subheader("DECISIONE FINALE")
+
+    st.write(
+        decisione_finale
     )
