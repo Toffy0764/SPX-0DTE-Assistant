@@ -6,6 +6,7 @@ from risk_manager import controlla_rischio
 from strikes import seleziona_strike
 from vwap import analizza_vwap
 
+
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
     layout="centered"
@@ -15,15 +16,24 @@ st.title("SPX 0DTE Assistant")
 
 st.write("Analisi giornaliera del mercato")
 
+
+# =========================
 # INPUT MERCATO
+# =========================
+
+st.subheader("Dati mercato")
+
 spx = st.number_input(
     "SPX attuale",
     value=6500
 )
+
 vwap = st.number_input(
     "VWAP giornata",
-    value=6480
+    value=6480,
+    key="vwap_input"
 )
+
 vix = st.number_input(
     "VIX",
     min_value=0.0,
@@ -35,27 +45,11 @@ trend = st.selectbox(
     ["positivo", "neutro", "negativo"]
 )
 
-
-
-risultato_vwap = analizza_vwap(
-    spx,
-    vwap
-)
-
-sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
-
 evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
 )
 
-
-risultato_vwap = analizza_vwap(
-    spx,
-    vwap
-)
-
-sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
 range_normale = st.selectbox(
     "Range normale",
     ["si", "no"]
@@ -70,38 +64,67 @@ capitale = st.number_input(
     "Capitale disponibile",
     value=100000
 )
+
+
+# =========================
+# ANALISI
+# =========================
+
 if st.button("ANALIZZA GIORNATA"):
+
+    risultato_vwap = analizza_vwap(
+        spx,
+        vwap
+    )
+
+    sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
+
 
     risultato_score = calcola_score(
         vix,
         trend,
-        sopra_vwap == "si",
+        sopra_vwap,
         evento_macro == "si",
         range_normale == "si",
         gex
     )
 
+
     risultato_strategia = scegli_strategia(
         risultato_score["score"],
         trend,
-        sopra_vwap == "si",
+        sopra_vwap,
         vix,
         range_normale == "si",
         gex
     )
+
 
     risultato_strike = seleziona_strike(
         spx,
         risultato_strategia["strategia"]
     )
 
+
     rischio = controlla_rischio(
         capitale,
         0.5,
-        400
+        risultato_strike.get("rischio", 0)
     )
 
+
+    # =========================
+    # RISULTATI
+    # =========================
+
     st.divider()
+
+    st.subheader("ANALISI VWAP")
+
+    st.write(
+        risultato_vwap
+    )
+
 
     st.subheader("RISULTATO")
 
@@ -115,20 +138,25 @@ if st.button("ANALIZZA GIORNATA"):
         "Stato:",
         risultato_score["stato"]
     )
-    st.subheader("Dettaglio analisi")
 
 
-   st.write(
-    risultato_score["dettaglio"]
-    )
+    st.subheader("Motivazioni")
+
     st.write(
-        "Strategia:",
+        risultato_score["motivi"]
+    )
+
+
+    st.subheader("STRATEGIA")
+
+    st.write(
         risultato_strategia["strategia"]
     )
+
     st.write(
-        "Motivazione:",
         risultato_strategia["motivazione"]
     )
+
 
     st.subheader("TRADE PROPOSTO")
 
@@ -136,10 +164,9 @@ if st.button("ANALIZZA GIORNATA"):
         risultato_strike
     )
 
+
+    st.subheader("RISK MANAGER")
+
     st.write(
-        "Risk Manager:",
-        rischio["stato"]
+        rischio
     )
-
-
-    
