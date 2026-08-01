@@ -43,3 +43,4 @@ def seleziona_strike(spx, strategia):
         }
 
     return risultato
+    print("strikes.py caricato correttamente")
