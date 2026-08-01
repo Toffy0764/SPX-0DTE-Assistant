@@ -3,7 +3,7 @@ import streamlit as st
 from score import calcola_score
 from strategy import scegli_strategia
 from risk_manager import controlla_rischio
-
+from strikes import seleziona_strike
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
