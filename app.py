@@ -35,10 +35,7 @@ trend = st.selectbox(
     ["positivo", "neutro", "negativo"]
 )
 
-vwap = st.number_input(
-    "VWAP giornata",
-    value=6480
-)
+
 
 risultato_vwap = analizza_vwap(
     spx,
