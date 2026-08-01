@@ -98,7 +98,16 @@ if st.button("ANALIZZA GIORNATA"):
         "Strategia:",
         risultato_strategia["strategia"]
     )
+risultato_strike = seleziona_strike(
+    risultato_score["score"],
+    risultato_strategia["strategia"]
+)
 
+st.subheader("TRADE PROPOSTO")
+
+st.write(
+    risultato_strike
+)     
     st.write(
         "Motivazione:",
         risultato_strategia["motivazione"]
