@@ -115,12 +115,15 @@ if st.button("ANALIZZA GIORNATA"):
         "Stato:",
         risultato_score["stato"]
     )
+   st.subheader("Dettaglio analisi")
 
+   st.write(
+    risultato_score["dettaglio"]
+    )
     st.write(
         "Strategia:",
         risultato_strategia["strategia"]
     )
-
     st.write(
         "Motivazione:",
         risultato_strategia["motivazione"]
