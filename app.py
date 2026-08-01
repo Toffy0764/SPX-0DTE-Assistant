@@ -7,6 +7,7 @@ from strikes import seleziona_strike
 from vwap import analizza_vwap
 from macro import controlla_evento_macro
 
+
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
     layout="centered"
@@ -50,6 +51,11 @@ evento_macro = st.selectbox(
     ["no", "si"]
 )
 
+evento_macro_livello = st.selectbox(
+    "Rischio evento macro",
+    ["nessuno", "medio", "alto"]
+)
+
 range_normale = st.selectbox(
     "Range normale",
     ["si", "no"]
@@ -64,10 +70,7 @@ capitale = st.number_input(
     "Capitale disponibile",
     value=100000
 )
-evento_macro_livello = st.selectbox(
-    "Rischio evento macro",
-    ["nessuno", "medio", "alto"]
-)
+
 
 # =========================
 # ANALISI
@@ -114,9 +117,11 @@ if st.button("ANALIZZA GIORNATA"):
         0.5,
         risultato_strike.get("rischio", 0)
     )
+
+
     analisi_macro = controlla_evento_macro(
-    evento_macro_livello
-)
+        evento_macro_livello
+    )
 
 
     # =========================
@@ -176,8 +181,10 @@ if st.button("ANALIZZA GIORNATA"):
     st.write(
         rischio
     )
+
+
     st.subheader("EVENTO MACRO")
 
-st.write(
-    analisi_macro
-)
+    st.write(
+        analisi_macro
+    )
