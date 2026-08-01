@@ -44,6 +44,17 @@ evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
 )
+vwap = st.number_input(
+    "VWAP giornata",
+    value=6480
+)
+
+risultato_vwap = analizza_vwap(
+    spx,
+    vwap
+)
+
+sopra_vwap = risultato_vwap["posizione"] == "Sopra VWAP"
 range_normale = st.selectbox(
     "Range normale",
     ["si", "no"]
