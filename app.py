@@ -35,7 +35,8 @@ sopra_vwap = st.selectbox(
 evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
-)if st.button("ANALIZZA GIORNATA"):
+)
+if st.button("ANALIZZA GIORNATA"):
 
     risultato_score = calcola_score(
         vix,
@@ -101,23 +102,6 @@ evento_macro = st.selectbox(
         "Risk Manager:",
         rischio["stato"]
     )
-
-range_normale = st.selectbox(
-    "Range normale",
-    ["si", "no"]
-)
-
-gex = st.selectbox(
-    "GEX",
-    ["positivo", "neutro", "negativo"]
-)
-
-capitale = st.number_input(
-    "Capitale disponibile",
-    value=100000
-)
-
-
 
 
     
