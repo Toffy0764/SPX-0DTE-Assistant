@@ -36,6 +36,7 @@ evento_macro = st.selectbox(
     "Evento macro importante",
     ["no", "si"]
 )
+
 if st.button("ANALIZZA GIORNATA"):
 
     risultato_score = calcola_score(
