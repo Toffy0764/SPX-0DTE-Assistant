@@ -8,12 +8,14 @@ from vwap import analizza_vwap
 from macro import controlla_evento_macro
 from adjustment import adatta_trade
 from decision import genera_decisione
+from trend import analizza_trend
 
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
     layout="centered"
 )
+
 
 st.title("📈 SPX 0DTE Assistant")
 
@@ -34,10 +36,12 @@ spx = st.number_input(
     value=6500
 )
 
+
 vwap = st.number_input(
     "VWAP giornata",
     value=6480
 )
+
 
 vix = st.number_input(
     "VIX",
@@ -45,14 +49,6 @@ vix = st.number_input(
     value=18.0
 )
 
-trend = st.selectbox(
-    "Trend",
-    [
-        "positivo",
-        "neutro",
-        "negativo"
-    ]
-)
 
 evento_macro = st.selectbox(
     "Evento macro importante",
@@ -62,6 +58,7 @@ evento_macro = st.selectbox(
     ]
 )
 
+
 range_normale = st.selectbox(
     "Range normale",
     [
@@ -69,6 +66,7 @@ range_normale = st.selectbox(
         "no"
     ]
 )
+
 
 gex = st.selectbox(
     "GEX",
@@ -81,7 +79,19 @@ gex = st.selectbox(
 
 
 # =========================
-# RISCHIO
+# TREND AUTOMATICO
+# =========================
+
+risultato_trend = analizza_trend(
+    spx,
+    vwap
+)
+
+trend = risultato_trend["trend"]
+
+
+# =========================
+# GESTIONE RISCHIO
 # =========================
 
 st.subheader("🛡 Gestione rischio")
@@ -231,18 +241,28 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     # =========================
-    # OUTPUT
+    # RISULTATI
     # =========================
 
     st.divider()
 
 
     st.subheader("📊 ANALISI VWAP")
-    st.write(risultato_vwap)
+    st.write(
+        risultato_vwap
+    )
+
+
+    st.subheader("📈 TREND AUTOMATICO")
+    st.write(
+        risultato_trend
+    )
 
 
     st.subheader("🌍 EVENTO MACRO")
-    st.write(analisi_macro)
+    st.write(
+        analisi_macro
+    )
 
 
     st.subheader("📈 RISULTATO")
@@ -257,6 +277,7 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     st.subheader("Motivazioni")
+
     st.write(
         risultato_score["motivi"]
     )
@@ -274,24 +295,28 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     st.subheader("💵 TRADE PROPOSTO")
+
     st.write(
         risultato_strike
     )
 
 
     st.subheader("🛡 RISK MANAGER")
+
     st.write(
         rischio
     )
 
 
     st.subheader("🔧 TRADE ADJUSTMENT")
+
     st.write(
         trade_adattato
     )
 
 
     st.subheader("🚦 DECISIONE FINALE")
+
     st.write(
         decisione_finale
     )
