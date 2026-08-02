@@ -116,26 +116,22 @@ if profilo_rischio == "Conservativo (0,25%)":
 
     rischio_percentuale = 0.25
 
-
 elif profilo_rischio == "Moderato (0,50%)":
 
     rischio_percentuale = 0.50
-
 
 elif profilo_rischio == "Bilanciato (0,75%)":
 
     rischio_percentuale = 0.75
 
-
 elif profilo_rischio == "Dinamico (1,00%)":
 
     rischio_percentuale = 1.00
 
-
 else:
 
     rischio_percentuale = st.number_input(
-        "Rischio massimo personalizzato (%)",
+        "Rischio personalizzato (%)",
         min_value=0.10,
         max_value=5.00,
         value=0.50,
@@ -143,11 +139,15 @@ else:
     )
 
 
-rischio_euro = capitale * rischio_percentuale / 100
+rischio_massimo_euro = (
+    capitale *
+    rischio_percentuale /
+    100
+)
 
 
 st.info(
-    f"Rischio massimo per trade: {rischio_euro:.0f} €"
+    f"Rischio massimo per trade: {rischio_massimo_euro:.0f} €"
 )
 
 
@@ -224,10 +224,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
     )
 
 
+    # CORRETTO:
+    # adatta_trade richiede solo trade + rischio massimo
+
     trade_adattato = adatta_trade(
-    risultato_strike,
-    rischio["rischio_trade"],
-    rischio["rischio_massimo"]
+        risultato_strike,
+        rischio["rischio_massimo"]
     )
 
 
@@ -239,22 +241,19 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     # =========================
-    # RISULTATI
+    # OUTPUT
     # =========================
-
 
     st.divider()
 
 
     st.subheader("📊 ANALISI VWAP")
-
     st.write(
         risultato_vwap
     )
 
 
     st.subheader("🌍 EVENTO MACRO")
-
     st.write(
         analisi_macro
     )
@@ -262,11 +261,9 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     st.subheader("📈 RISULTATO")
 
-
     st.write(
         f"Score: {risultato_score['score']} /100"
     )
-
 
     st.write(
         f"Stato: {risultato_score['stato']}"
@@ -282,11 +279,9 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     st.subheader("🎯 STRATEGIA")
 
-
     st.write(
         risultato_strategia["strategia"]
     )
-
 
     st.write(
         risultato_strategia["motivazione"]
@@ -295,14 +290,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     st.subheader("💵 TRADE PROPOSTO")
 
-
     st.write(
         risultato_strike
     )
 
 
     st.subheader("🛡 RISK MANAGER")
-
 
     st.write(
         rischio
@@ -311,14 +304,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     st.subheader("🔧 TRADE ADJUSTMENT")
 
-
     st.write(
         trade_adattato
     )
 
 
     st.subheader("🚦 DECISIONE FINALE")
-
 
     st.write(
         decisione_finale
