@@ -1,28 +1,37 @@
-def analizza_trend(prezzo, vwap):
-    """
-    Trend Engine v1.6
+def calcola_ema(prezzi, periodo):
 
-    Analizza:
-    - posizione rispetto al VWAP
-    - distanza dal VWAP
-    - forza del movimento
+    if len(prezzi) < periodo:
+        return prezzi[-1]
 
-    Output:
-    trend
-    score
-    confidenza
-    motivazioni
-    """
+    moltiplicatore = 2 / (periodo + 1)
+
+    ema = prezzi[0]
+
+    for prezzo in prezzi[1:]:
+
+        ema = (
+            prezzo * moltiplicatore
+            +
+            ema * (1 - moltiplicatore)
+        )
+
+    return ema
+
+
+
+def analizza_trend(prezzi, vwap):
 
     motivazioni = []
 
     score_trend = 0
 
 
-    # Distanza dal VWAP
+    prezzo = prezzi[-1]
 
-    distanza = prezzo - vwap
 
+    # =====================
+    # VWAP
+    # =====================
 
     if prezzo > vwap:
 
@@ -32,7 +41,7 @@ def analizza_trend(prezzo, vwap):
             "Prezzo sopra VWAP"
         )
 
-    elif prezzo < vwap:
+    else:
 
         score_trend -= 15
 
@@ -40,28 +49,55 @@ def analizza_trend(prezzo, vwap):
             "Prezzo sotto VWAP"
         )
 
-    else:
+
+    # =====================
+    # EMA
+    # =====================
+
+    ema20 = calcola_ema(
+        prezzi,
+        20
+    )
+
+    ema50 = calcola_ema(
+        prezzi,
+        50
+    )
+
+
+    if ema20 > ema50:
+
+        score_trend += 20
 
         motivazioni.append(
-            "Prezzo sul VWAP"
+            "EMA20 sopra EMA50"
+        )
+
+    else:
+
+        score_trend -= 20
+
+        motivazioni.append(
+            "EMA20 sotto EMA50"
         )
 
 
-    # Forza distanza dal VWAP
+    # =====================
+    # MOMENTUM
+    # =====================
 
-    distanza_percentuale = (
-        abs(distanza) / vwap
-    ) * 100
+    if len(prezzi) >= 5:
 
+        variazione = (
+            prezzo - prezzi[-5]
+        )
 
-    if distanza_percentuale >= 0.30:
-
-        if prezzo > vwap:
+        if variazione > 0:
 
             score_trend += 10
 
             motivazioni.append(
-                "Distanza dal VWAP favorevole"
+                "Momentum positivo"
             )
 
         else:
@@ -69,18 +105,20 @@ def analizza_trend(prezzo, vwap):
             score_trend -= 10
 
             motivazioni.append(
-                "Distanza dal VWAP negativa"
+                "Momentum negativo"
             )
 
 
-    # Classificazione trend
+    # =====================
+    # CLASSIFICAZIONE
+    # =====================
 
-    if score_trend >= 20:
+    if score_trend >= 25:
 
         trend = "positivo"
 
 
-    elif score_trend <= -20:
+    elif score_trend <= -25:
 
         trend = "negativo"
 
@@ -90,11 +128,8 @@ def analizza_trend(prezzo, vwap):
         trend = "neutro"
 
 
-
-    # Confidenza
-
     confidenza = min(
-        abs(score_trend) * 4,
+        abs(score_trend) * 3,
         95
     )
 
@@ -107,11 +142,9 @@ def analizza_trend(prezzo, vwap):
 
         "confidenza": confidenza,
 
-        "distanza_vwap_percentuale":
-            round(
-                distanza_percentuale,
-                2
-            ),
+        "ema20": round(ema20,2),
+
+        "ema50": round(ema50,2),
 
         "motivazioni": motivazioni
 
