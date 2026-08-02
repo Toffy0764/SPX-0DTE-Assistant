@@ -16,12 +16,7 @@ st.set_page_config(
     layout="centered"
 )
 
-
 st.title("📈 SPX 0DTE Assistant")
-
-st.write(
-    "Analisi giornaliera mercato e gestione rischio"
-)
 
 
 # =========================
@@ -30,41 +25,31 @@ st.write(
 
 st.subheader("📊 Dati mercato")
 
-
 spx = st.number_input(
     "SPX attuale",
     value=6500
 )
-
 
 vwap = st.number_input(
     "VWAP giornata",
     value=6480
 )
 
-
 vix = st.number_input(
     "VIX",
-    min_value=0.0,
     value=18.0
 )
 
 
 evento_macro = st.selectbox(
     "Evento macro importante",
-    [
-        "no",
-        "si"
-    ]
+    ["no", "si"]
 )
 
 
 range_normale = st.selectbox(
     "Range normale",
-    [
-        "si",
-        "no"
-    ]
+    ["si", "no"]
 )
 
 
@@ -79,19 +64,33 @@ gex = st.selectbox(
 
 
 # =========================
-# TREND AUTOMATICO
+# PREZZI TEST
+# =========================
+
+prezzi_test = [
+    spx - 20,
+    spx - 15,
+    spx - 10,
+    spx - 5,
+    spx
+]
+
+
+# =========================
+# TREND ENGINE v1.7
 # =========================
 
 risultato_trend = analizza_trend(
-    spx,
+    prezzi_test,
     vwap
 )
+
 
 trend = risultato_trend["trend"]
 
 
 # =========================
-# GESTIONE RISCHIO
+# RISCHIO
 # =========================
 
 st.subheader("🛡 Gestione rischio")
@@ -103,72 +102,35 @@ capitale = st.number_input(
 )
 
 
-profilo_rischio = st.selectbox(
-    "Profilo di rischio",
+profilo = st.selectbox(
+    "Profilo rischio",
     [
         "Conservativo (0,25%)",
         "Moderato (0,50%)",
         "Bilanciato (0,75%)",
-        "Dinamico (1,00%)",
-        "Personalizzato"
+        "Dinamico (1%)"
     ]
 )
 
 
-if profilo_rischio == "Conservativo (0,25%)":
-
+if profilo == "Conservativo (0,25%)":
     rischio_percentuale = 0.25
 
-elif profilo_rischio == "Moderato (0,50%)":
-
+elif profilo == "Moderato (0,50%)":
     rischio_percentuale = 0.50
 
-elif profilo_rischio == "Bilanciato (0,75%)":
-
+elif profilo == "Bilanciato (0,75%)":
     rischio_percentuale = 0.75
 
-elif profilo_rischio == "Dinamico (1,00%)":
-
-    rischio_percentuale = 1.00
-
 else:
-
-    rischio_percentuale = st.number_input(
-        "Rischio personalizzato (%)",
-        min_value=0.10,
-        max_value=5.00,
-        value=0.50,
-        step=0.05
-    )
-
-
-rischio_massimo_euro = (
-    capitale *
-    rischio_percentuale /
-    100
-)
-
-
-st.info(
-    f"Rischio massimo per trade: {rischio_massimo_euro:.0f} €"
-)
-
-
-evento_macro_livello = st.selectbox(
-    "Rischio evento macro",
-    [
-        "nessuno",
-        "medio",
-        "alto"
-    ]
-)
+    rischio_percentuale = 1
 
 
 # =========================
 # ANALISI
 # =========================
 
-if st.button("🚀 ANALIZZA GIORNATA"):
+if st.button("🚀 ANALIZZA"):
 
 
     risultato_vwap = analizza_vwap(
@@ -194,12 +156,12 @@ if st.button("🚀 ANALIZZA GIORNATA"):
     )
 
 
-    analisi_macro = controlla_evento_macro(
-        evento_macro_livello
+    macro = controlla_evento_macro(
+        "nessuno"
     )
 
 
-    risultato_strategia = scegli_strategia(
+    strategia = scegli_strategia(
         risultato_score["score"],
         trend,
         sopra_vwap,
@@ -209,114 +171,70 @@ if st.button("🚀 ANALIZZA GIORNATA"):
     )
 
 
-    risultato_strike = seleziona_strike(
+    trade = seleziona_strike(
         spx,
-        risultato_strategia["strategia"]
+        strategia["strategia"]
     )
 
 
     rischio = controlla_rischio(
         capitale,
         rischio_percentuale,
-        risultato_strike.get(
+        trade.get(
             "rischio",
             0
         )
     )
 
 
-    trade_adattato = adatta_trade(
-        risultato_strike,
+    adattamento = adatta_trade(
+        trade,
         rischio["rischio_massimo"]
     )
 
 
-    decisione_finale = genera_decisione(
+    decisione = genera_decisione(
         risultato_score["score"],
-        risultato_strategia["strategia"],
+        strategia["strategia"],
         rischio,
-        analisi_macro,
-        trade_adattato
+        macro,
+        adattamento
     )
 
 
-    # =========================
-    # RISULTATI
-    # =========================
+    # =====================
+    # OUTPUT
+    # =====================
 
     st.divider()
 
-
-    st.subheader("📊 ANALISI VWAP")
-    st.write(
-        risultato_vwap
-    )
+    st.subheader("📊 VWAP")
+    st.write(risultato_vwap)
 
 
-    st.subheader("📈 TREND AUTOMATICO")
-    st.write(
-        risultato_trend
-    )
+    st.subheader("📈 TREND ENGINE v1.7")
+    st.write(risultato_trend)
 
 
-    st.subheader("🌍 EVENTO MACRO")
-    st.write(
-        analisi_macro
-    )
-
-
-    st.subheader("📈 RISULTATO")
-
-    st.write(
-        f"Score: {risultato_score['score']} /100"
-    )
-
-    st.write(
-        f"Stato: {risultato_score['stato']}"
-    )
-
-
-    st.subheader("Motivazioni")
-
-    st.write(
-        risultato_score["motivi"]
-    )
+    st.subheader("📈 SCORE")
+    st.write(risultato_score)
 
 
     st.subheader("🎯 STRATEGIA")
-
-    st.write(
-        risultato_strategia["strategia"]
-    )
-
-    st.write(
-        risultato_strategia["motivazione"]
-    )
+    st.write(strategia)
 
 
-    st.subheader("💵 TRADE PROPOSTO")
-
-    st.write(
-        risultato_strike
-    )
+    st.subheader("💵 TRADE")
+    st.write(trade)
 
 
     st.subheader("🛡 RISK MANAGER")
-
-    st.write(
-        rischio
-    )
+    st.write(rischio)
 
 
-    st.subheader("🔧 TRADE ADJUSTMENT")
-
-    st.write(
-        trade_adattato
-    )
+    st.subheader("🔧 ADATTAMENTO")
+    st.write(adattamento)
 
 
     st.subheader("🚦 DECISIONE FINALE")
-
-    st.write(
-        decisione_finale
-    )
+    st.write(decisione)
