@@ -36,9 +36,8 @@ st.subheader("🕒 MARKET STATUS")
 
 stato_mercato = market_status()
 
-st.write(
-    stato_mercato
-)
+st.write(stato_mercato)
+
 
 
 # =========================
@@ -63,8 +62,9 @@ st.write(
 )
 
 
+
 # =========================
-# TREND ENGINE EMA MOMENTUM
+# TREND ENGINE v1.9.7
 # =========================
 
 risultato_trend = analizza_trend(
@@ -72,11 +72,12 @@ risultato_trend = analizza_trend(
     vwap
 )
 
+
 trend = risultato_trend["trend"]
 
 
 st.subheader(
-    "📈 TREND ENGINE EMA MOMENTUM v1.9.5"
+    "📈 TREND ENGINE RISK ADJUSTED v1.9.7"
 )
 
 st.write(
@@ -192,6 +193,7 @@ if st.button("🚀 ANALIZZA MERCATO"):
     )
 
 
+
     sopra_vwap = (
         risultato_vwap["posizione"]
         ==
@@ -274,24 +276,30 @@ if st.button("🚀 ANALIZZA MERCATO"):
     st.write(risultato_vwap)
 
 
+
     st.subheader("📊 SCORE")
     st.write(risultato_score)
+
 
 
     st.subheader("🎯 STRATEGIA")
     st.write(strategia)
 
 
+
     st.subheader("💵 TRADE PROPOSTO")
     st.write(trade)
+
 
 
     st.subheader("🛡 RISK MANAGER")
     st.write(rischio)
 
 
+
     st.subheader("🔧 TRADE ADJUSTMENT")
     st.write(adattamento)
+
 
 
     st.subheader("🚦 DECISIONE FINALE")
