@@ -14,10 +14,7 @@ def calcola_ema(prezzi, periodo):
         .mean()
     )
 
-    return round(
-        float(ema.iloc[-1]),
-        2
-    )
+    return ema
 
 
 
@@ -29,7 +26,9 @@ def analizza_trend(prezzi, vwap):
 
             "trend": "NEUTRO",
 
-            "forza": 0,
+            "forza_trend": 0,
+
+            "confidenza": 0,
 
             "motivazioni": [
                 "Dati insufficienti"
@@ -37,6 +36,9 @@ def analizza_trend(prezzi, vwap):
 
         }
 
+
+
+    serie = pd.Series(prezzi)
 
 
     ema20 = calcola_ema(
@@ -51,29 +53,59 @@ def analizza_trend(prezzi, vwap):
     )
 
 
-    prezzo_attuale = prezzi[-1]
-
-
-    momentum = (
-
-        prezzi[-1]
-        -
-        prezzi[-10]
-
+    prezzo_attuale = (
+        serie.iloc[-1]
     )
 
 
-    motivazioni = []
+    valore_ema20 = (
+        ema20.iloc[-1]
+    )
+
+
+    valore_ema50 = (
+        ema50.iloc[-1]
+    )
+
+
+    # Pendenza EMA
+
+    slope_ema20 = (
+        valore_ema20
+        -
+        ema20.iloc[-5]
+    )
+
+
+    slope_ema50 = (
+        valore_ema50
+        -
+        ema50.iloc[-5]
+    )
+
+
+
+    # Momentum ultime 10 barre
+
+    momentum = (
+        serie.iloc[-1]
+        -
+        serie.iloc[-10]
+    )
+
+
 
     punteggio = 0
 
+    motivazioni = []
 
 
-    # VWAP
+
+    # Prezzo rispetto al VWAP
 
     if prezzo_attuale > vwap:
 
-        punteggio += 30
+        punteggio += 25
 
         motivazioni.append(
             "Prezzo sopra VWAP"
@@ -81,7 +113,7 @@ def analizza_trend(prezzi, vwap):
 
     else:
 
-        punteggio -= 20
+        punteggio -= 15
 
         motivazioni.append(
             "Prezzo sotto VWAP"
@@ -89,11 +121,11 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    # EMA
+    # EMA20 vs EMA50
 
-    if ema20 > ema50:
+    if valore_ema20 > valore_ema50:
 
-        punteggio += 40
+        punteggio += 35
 
         motivazioni.append(
             "EMA20 sopra EMA50"
@@ -101,10 +133,28 @@ def analizza_trend(prezzi, vwap):
 
     else:
 
-        punteggio -= 30
+        punteggio -= 25
 
         motivazioni.append(
             "EMA20 sotto EMA50"
+        )
+
+
+
+    # Pendenza EMA20
+
+    if slope_ema20 > 0:
+
+        punteggio += 15
+
+        motivazioni.append(
+            "EMA20 crescente"
+        )
+
+    else:
+
+        motivazioni.append(
+            "EMA20 in calo"
         )
 
 
@@ -113,7 +163,7 @@ def analizza_trend(prezzi, vwap):
 
     if momentum > 0:
 
-        punteggio += 30
+        punteggio += 25
 
         motivazioni.append(
             "Momentum positivo"
@@ -121,7 +171,7 @@ def analizza_trend(prezzi, vwap):
 
     else:
 
-        punteggio -= 20
+        punteggio -= 10
 
         motivazioni.append(
             "Momentum negativo"
@@ -129,19 +179,32 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    if punteggio >= 60:
+    forza = max(
+        min(punteggio,100),
+        0
+    )
 
-        trend = "POSITIVO"
 
 
-    elif punteggio <= 30:
+    if forza >= 80:
 
-        trend = "NEGATIVO"
+        trend = "STRONG BULLISH"
 
+    elif forza >= 60:
+
+        trend = "BULLISH"
+
+    elif forza >= 40:
+
+        trend = "NEUTRO"
 
     else:
 
-        trend = "NEUTRO"
+        trend = "BEARISH"
+
+
+
+    confidenza = forza
 
 
 
@@ -149,18 +212,39 @@ def analizza_trend(prezzi, vwap):
 
         "trend": trend,
 
-        "forza": min(
-            max(punteggio,0),
-            100
+        "forza_trend": forza,
+
+        "confidenza": confidenza,
+
+        "prezzo": round(
+            float(prezzo_attuale),
+            2
         ),
 
-        "prezzo": prezzo_attuale,
+        "vwap": round(
+            float(vwap),
+            2
+        ),
 
-        "VWAP": vwap,
+        "ema20": round(
+            float(valore_ema20),
+            2
+        ),
 
-        "EMA20": ema20,
+        "ema50": round(
+            float(valore_ema50),
+            2
+        ),
 
-        "EMA50": ema50,
+        "pendenza_ema20": round(
+            float(slope_ema20),
+            2
+        ),
+
+        "pendenza_ema50": round(
+            float(slope_ema50),
+            2
+        ),
 
         "momentum_10_barre": round(
             float(momentum),
