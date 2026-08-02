@@ -1,48 +1,87 @@
+import pandas as pd
+
+
 def calcola_ema(prezzi, periodo):
 
-    if len(prezzi) == 0:
-        return 0
+    serie = pd.Series(prezzi)
 
-    if len(prezzi) < periodo:
-        return prezzi[-1]
-
-    moltiplicatore = 2 / (periodo + 1)
-
-    ema = prezzi[0]
-
-    for prezzo in prezzi[1:]:
-        ema = (
-            prezzo * moltiplicatore
-            +
-            ema * (1 - moltiplicatore)
+    ema = (
+        serie
+        .ewm(
+            span=periodo,
+            adjust=False
         )
+        .mean()
+    )
 
-    return ema
+    return round(
+        float(ema.iloc[-1]),
+        2
+    )
 
 
 
 def analizza_trend(prezzi, vwap):
 
+    if len(prezzi) < 50:
+
+        return {
+
+            "trend": "NEUTRO",
+
+            "forza": 0,
+
+            "motivazioni": [
+                "Dati insufficienti"
+            ]
+
+        }
+
+
+
+    ema20 = calcola_ema(
+        prezzi,
+        20
+    )
+
+
+    ema50 = calcola_ema(
+        prezzi,
+        50
+    )
+
+
+    prezzo_attuale = prezzi[-1]
+
+
+    momentum = (
+
+        prezzi[-1]
+        -
+        prezzi[-10]
+
+    )
+
+
     motivazioni = []
 
-    score_trend = 0
+    punteggio = 0
 
-    prezzo = prezzi[-1]
 
 
     # VWAP
 
-    if prezzo > vwap:
+    if prezzo_attuale > vwap:
 
-        score_trend += 15
+        punteggio += 30
 
         motivazioni.append(
             "Prezzo sopra VWAP"
         )
 
-    elif prezzo < vwap:
+    else:
 
-        score_trend -= 15
+        punteggio -= 20
 
         motivazioni.append(
             "Prezzo sotto VWAP"
@@ -52,28 +91,17 @@ def analizza_trend(prezzi, vwap):
 
     # EMA
 
-    ema20 = calcola_ema(
-        prezzi,
-        20
-    )
-
-    ema50 = calcola_ema(
-        prezzi,
-        50
-    )
-
-
     if ema20 > ema50:
 
-        score_trend += 20
+        punteggio += 40
 
         motivazioni.append(
             "EMA20 sopra EMA50"
         )
 
-    elif ema20 < ema50:
+    else:
 
-        score_trend -= 20
+        punteggio -= 30
 
         motivazioni.append(
             "EMA20 sotto EMA50"
@@ -83,64 +111,61 @@ def analizza_trend(prezzi, vwap):
 
     # Momentum
 
-    if len(prezzi) >= 5:
+    if momentum > 0:
 
-        variazione = prezzo - prezzi[-5]
+        punteggio += 30
 
+        motivazioni.append(
+            "Momentum positivo"
+        )
 
-        if variazione > 0:
+    else:
 
-            score_trend += 10
+        punteggio -= 20
 
-            motivazioni.append(
-                "Momentum positivo"
-            )
-
-        elif variazione < 0:
-
-            score_trend -= 10
-
-            motivazioni.append(
-                "Momentum negativo"
-            )
+        motivazioni.append(
+            "Momentum negativo"
+        )
 
 
 
-    # Trend finale
+    if punteggio >= 60:
 
-    if score_trend >= 25:
-
-        trend = "positivo"
+        trend = "POSITIVO"
 
 
-    elif score_trend <= -25:
+    elif punteggio <= 30:
 
-        trend = "negativo"
+        trend = "NEGATIVO"
 
 
     else:
 
-        trend = "neutro"
+        trend = "NEUTRO"
 
-
-
-    confidenza = min(
-        abs(score_trend) * 3,
-        95
-    )
 
 
     return {
 
         "trend": trend,
 
-        "score_trend": score_trend,
+        "forza": min(
+            max(punteggio,0),
+            100
+        ),
 
-        "confidenza": confidenza,
+        "prezzo": prezzo_attuale,
 
-        "ema20": round(ema20,2),
+        "VWAP": vwap,
 
-        "ema50": round(ema50,2),
+        "EMA20": ema20,
+
+        "EMA50": ema50,
+
+        "momentum_10_barre": round(
+            float(momentum),
+            2
+        ),
 
         "motivazioni": motivazioni
 
