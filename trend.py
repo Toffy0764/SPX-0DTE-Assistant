@@ -5,7 +5,7 @@ def calcola_ema(prezzi, periodo):
 
     serie = pd.Series(prezzi)
 
-    ema = (
+    return (
         serie
         .ewm(
             span=periodo,
@@ -13,8 +13,6 @@ def calcola_ema(prezzi, periodo):
         )
         .mean()
     )
-
-    return ema
 
 
 
@@ -25,11 +23,8 @@ def analizza_trend(prezzi, vwap):
         return {
 
             "trend": "NEUTRO",
-
             "forza_trend": 0,
-
             "confidenza": 0,
-
             "motivazioni": [
                 "Dati insufficienti"
             ]
@@ -37,8 +32,12 @@ def analizza_trend(prezzi, vwap):
         }
 
 
-
     serie = pd.Series(prezzi)
+
+
+    prezzo = float(
+        serie.iloc[-1]
+    )
 
 
     ema20 = calcola_ema(
@@ -46,52 +45,54 @@ def analizza_trend(prezzi, vwap):
         20
     )
 
-
     ema50 = calcola_ema(
         prezzi,
         50
     )
 
 
-    prezzo_attuale = (
-        serie.iloc[-1]
-    )
-
-
-    valore_ema20 = (
+    valore_ema20 = float(
         ema20.iloc[-1]
     )
 
-
-    valore_ema50 = (
+    valore_ema50 = float(
         ema50.iloc[-1]
     )
 
 
-    # Pendenza EMA
-
     slope_ema20 = (
         valore_ema20
         -
-        ema20.iloc[-5]
+        float(ema20.iloc[-5])
     )
 
 
     slope_ema50 = (
         valore_ema50
         -
-        ema50.iloc[-5]
+        float(ema50.iloc[-5])
     )
 
-
-
-    # Momentum ultime 10 barre
 
     momentum = (
-        serie.iloc[-1]
+        prezzo
         -
-        serie.iloc[-10]
+        float(serie.iloc[-10])
     )
+
+
+    # =====================
+    # VWAP DISTANCE
+    # =====================
+
+    distanza_vwap = (
+        prezzo - vwap
+    )
+
+
+    distanza_percentuale = (
+        distanza_vwap / vwap
+    ) * 100
 
 
 
@@ -101,11 +102,11 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    # Prezzo rispetto al VWAP
+    # Prezzo vs VWAP
 
-    if prezzo_attuale > vwap:
+    if prezzo > vwap:
 
-        punteggio += 25
+        punteggio += 20
 
         motivazioni.append(
             "Prezzo sopra VWAP"
@@ -113,7 +114,7 @@ def analizza_trend(prezzi, vwap):
 
     else:
 
-        punteggio -= 15
+        punteggio -= 20
 
         motivazioni.append(
             "Prezzo sotto VWAP"
@@ -121,11 +122,11 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    # EMA20 vs EMA50
+    # EMA structure
 
     if valore_ema20 > valore_ema50:
 
-        punteggio += 35
+        punteggio += 25
 
         motivazioni.append(
             "EMA20 sopra EMA50"
@@ -141,7 +142,7 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    # Pendenza EMA20
+    # EMA slope
 
     if slope_ema20 > 0:
 
@@ -151,10 +152,14 @@ def analizza_trend(prezzi, vwap):
             "EMA20 crescente"
         )
 
-    else:
+
+
+    if slope_ema50 > 0:
+
+        punteggio += 10
 
         motivazioni.append(
-            "EMA20 in calo"
+            "EMA50 crescente"
         )
 
 
@@ -163,7 +168,7 @@ def analizza_trend(prezzi, vwap):
 
     if momentum > 0:
 
-        punteggio += 25
+        punteggio += 15
 
         motivazioni.append(
             "Momentum positivo"
@@ -179,8 +184,47 @@ def analizza_trend(prezzi, vwap):
 
 
 
+    # =====================
+    # ESTENSIONE VWAP
+    # =====================
+
+    if abs(distanza_percentuale) > 0.60:
+
+        punteggio -= 20
+
+        stato_estensione = "ECCESSIVA"
+
+        motivazioni.append(
+            "Prezzo molto distante dal VWAP"
+        )
+
+
+    elif abs(distanza_percentuale) > 0.30:
+
+        punteggio -= 5
+
+        stato_estensione = "MODERATA"
+
+        motivazioni.append(
+            "Prezzo leggermente esteso dal VWAP"
+        )
+
+
+    else:
+
+        stato_estensione = "NORMALE"
+
+        motivazioni.append(
+            "Distanza VWAP normale"
+        )
+
+
+
     forza = max(
-        min(punteggio,100),
+        min(
+            punteggio,
+            100
+        ),
         0
     )
 
@@ -204,52 +248,74 @@ def analizza_trend(prezzi, vwap):
 
 
 
-    confidenza = forza
-
-
-
     return {
+
 
         "trend": trend,
 
+
         "forza_trend": forza,
 
-        "confidenza": confidenza,
+
+        "confidenza": forza,
+
 
         "prezzo": round(
-            float(prezzo_attuale),
+            prezzo,
             2
         ),
+
 
         "vwap": round(
             float(vwap),
             2
         ),
 
-        "ema20": round(
-            float(valore_ema20),
+
+        "distanza_vwap_punti": round(
+            distanza_vwap,
             2
         ),
+
+
+        "distanza_vwap_percentuale": round(
+            distanza_percentuale,
+            3
+        ),
+
+
+        "ema20": round(
+            valore_ema20,
+            2
+        ),
+
 
         "ema50": round(
-            float(valore_ema50),
+            valore_ema50,
             2
         ),
+
 
         "pendenza_ema20": round(
-            float(slope_ema20),
+            slope_ema20,
             2
         ),
+
 
         "pendenza_ema50": round(
-            float(slope_ema50),
+            slope_ema50,
             2
         ),
 
+
         "momentum_10_barre": round(
-            float(momentum),
+            momentum,
             2
         ),
+
+
+        "stato_estensione": stato_estensione,
+
 
         "motivazioni": motivazioni
 
