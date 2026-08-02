@@ -15,12 +15,30 @@ def get_data():
         auto_adjust=False
     )
 
+
     if dati.empty:
+
         raise Exception(
             "Nessun dato ricevuto da Yahoo Finance"
         )
 
+
     return dati
+
+
+
+def normalizza_colonna(colonna):
+
+    """
+    Gestisce il formato multi indice
+    restituito da Yahoo Finance
+    """
+
+    if isinstance(colonna, pd.DataFrame):
+
+        return colonna.iloc[:, 0]
+
+    return colonna
 
 
 
@@ -28,10 +46,14 @@ def get_spx_price():
 
     dati = get_data()
 
-    ultimo = dati["Close"].iloc[-1]
 
-    if isinstance(ultimo, pd.Series):
-        ultimo = ultimo.iloc[0]
+    close = normalizza_colonna(
+        dati["Close"]
+    )
+
+
+    ultimo = close.dropna().iloc[-1]
+
 
     return round(
         float(ultimo),
@@ -44,27 +66,21 @@ def get_intraday_prices():
 
     dati = get_data()
 
-    prezzi = dati["Close"]
 
-    if isinstance(prezzi, pd.DataFrame):
-        prezzi = prezzi.iloc[:,0]
+    close = normalizza_colonna(
+        dati["Close"]
+    )
 
 
     prezzi = (
-        prezzi
+        close
         .dropna()
         .tolist()
     )
 
 
-    if len(prezzi) == 0:
-        raise Exception(
-            "Serie prezzi vuota"
-        )
-
-
     return [
-        round(float(x),2)
+        round(float(x), 2)
         for x in prezzi
     ]
 
@@ -75,22 +91,43 @@ def get_vwap():
     dati = get_data()
 
 
-    close = dati["Close"]
-    volume = dati["Volume"]
+    close = normalizza_colonna(
+        dati["Close"]
+    )
 
 
-    if isinstance(close, pd.DataFrame):
-        close = close.iloc[:,0]
+    volume = normalizza_colonna(
+        dati["Volume"]
+    )
 
-    if isinstance(volume, pd.DataFrame):
-        volume = volume.iloc[:,0]
+
+    dati_puliti = pd.DataFrame({
+
+        "close": close,
+
+        "volume": volume
+
+    }).dropna()
+
+
+
+    if dati_puliti["volume"].sum() == 0:
+
+        return round(
+            float(close.iloc[-1]),
+            2
+        )
+
 
 
     vwap = (
-        (close * volume).sum()
-        /
-        volume.sum()
-    )
+
+        dati_puliti["close"]
+        *
+        dati_puliti["volume"]
+
+    ).sum() / dati_puliti["volume"].sum()
+
 
 
     return round(
