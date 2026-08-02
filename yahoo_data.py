@@ -9,19 +9,16 @@ def get_data():
 
     dati = yf.download(
         TICKER,
-        period="5d",
-        interval="15m",
+        period="1d",
+        interval="5m",
         progress=False,
         auto_adjust=False
     )
 
-
     if dati.empty:
-
         raise Exception(
             "Nessun dato ricevuto da Yahoo Finance"
         )
-
 
     return dati
 
@@ -30,8 +27,8 @@ def get_data():
 def normalizza_colonna(colonna):
 
     """
-    Gestisce il formato multi indice
-    restituito da Yahoo Finance
+    Yahoo può restituire colonne
+    con struttura multipla.
     """
 
     if isinstance(colonna, pd.DataFrame):
@@ -46,14 +43,15 @@ def get_spx_price():
 
     dati = get_data()
 
-
     close = normalizza_colonna(
         dati["Close"]
     )
 
-
-    ultimo = close.dropna().iloc[-1]
-
+    ultimo = (
+        close
+        .dropna()
+        .iloc[-1]
+    )
 
     return round(
         float(ultimo),
@@ -66,18 +64,15 @@ def get_intraday_prices():
 
     dati = get_data()
 
-
     close = normalizza_colonna(
         dati["Close"]
     )
-
 
     prezzi = (
         close
         .dropna()
         .tolist()
     )
-
 
     return [
         round(float(x), 2)
@@ -95,7 +90,6 @@ def get_vwap():
         dati["Close"]
     )
 
-
     volume = normalizza_colonna(
         dati["Volume"]
     )
@@ -111,13 +105,26 @@ def get_vwap():
 
 
 
-    if dati_puliti["volume"].sum() == 0:
+    if dati_puliti.empty:
 
         return round(
             float(close.iloc[-1]),
             2
         )
 
+
+    volume_totale = (
+        dati_puliti["volume"]
+        .sum()
+    )
+
+
+    if volume_totale == 0:
+
+        return round(
+            float(close.iloc[-1]),
+            2
+        )
 
 
     vwap = (
@@ -126,8 +133,7 @@ def get_vwap():
         *
         dati_puliti["volume"]
 
-    ).sum() / dati_puliti["volume"].sum()
-
+    ).sum() / volume_totale
 
 
     return round(
