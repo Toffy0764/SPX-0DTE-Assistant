@@ -16,6 +16,8 @@ from market_data import (
     get_vwap
 )
 
+from market_status import market_status
+
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
@@ -27,7 +29,20 @@ st.title("📈 SPX 0DTE Assistant")
 
 
 # =========================
-# MARKET DATA ENGINE
+# MARKET STATUS
+# =========================
+
+st.subheader("🕒 MARKET STATUS")
+
+stato_mercato = market_status()
+
+st.write(
+    stato_mercato
+)
+
+
+# =========================
+# MARKET DATA
 # =========================
 
 spx = get_spx_price()
@@ -48,6 +63,7 @@ st.write(
 )
 
 
+
 # =========================
 # TREND ENGINE
 # =========================
@@ -57,12 +73,13 @@ risultato_trend = analizza_trend(
     vwap
 )
 
+
 trend = risultato_trend["trend"]
 
 
 
 # =========================
-# INPUT PARAMETRI
+# PARAMETRI
 # =========================
 
 st.subheader("⚙️ Parametri")
@@ -147,6 +164,13 @@ else:
 # =========================
 
 if st.button("🚀 ANALIZZA MERCATO"):
+
+
+    if not stato_mercato["operativita"]:
+
+        st.warning(
+            "Mercato chiuso: analisi operativa sospesa"
+        )
 
 
     risultato_vwap = analizza_vwap(
@@ -235,42 +259,33 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
 
     st.subheader("📊 SCORE")
-
-    st.write(
-        risultato_score
-    )
+    st.write(risultato_score)
 
 
     st.subheader("🎯 STRATEGIA")
-
-    st.write(
-        strategia
-    )
+    st.write(strategia)
 
 
-    st.subheader("💵 TRADE")
-
-    st.write(
-        trade
-    )
+    st.subheader("💵 TRADE PROPOSTO")
+    st.write(trade)
 
 
     st.subheader("🛡 RISK MANAGER")
-
-    st.write(
-        rischio
-    )
+    st.write(rischio)
 
 
     st.subheader("🔧 TRADE ADJUSTMENT")
-
-    st.write(
-        adattamento
-    )
+    st.write(adattamento)
 
 
     st.subheader("🚦 DECISIONE FINALE")
 
-    st.write(
-        decisione
-    )
+    if not stato_mercato["operativita"]:
+
+        st.error(
+            "NON OPERARE - Mercato chiuso"
+        )
+
+    else:
+
+        st.write(decisione)
