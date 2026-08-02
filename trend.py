@@ -1,5 +1,8 @@
 def calcola_ema(prezzi, periodo):
 
+    if len(prezzi) == 0:
+        return 0
+
     if len(prezzi) < periodo:
         return prezzi[-1]
 
@@ -8,7 +11,6 @@ def calcola_ema(prezzi, periodo):
     ema = prezzi[0]
 
     for prezzo in prezzi[1:]:
-
         ema = (
             prezzo * moltiplicatore
             +
@@ -25,13 +27,10 @@ def analizza_trend(prezzi, vwap):
 
     score_trend = 0
 
-
     prezzo = prezzi[-1]
 
 
-    # =====================
     # VWAP
-    # =====================
 
     if prezzo > vwap:
 
@@ -41,7 +40,7 @@ def analizza_trend(prezzi, vwap):
             "Prezzo sopra VWAP"
         )
 
-    else:
+    elif prezzo < vwap:
 
         score_trend -= 15
 
@@ -50,9 +49,8 @@ def analizza_trend(prezzi, vwap):
         )
 
 
-    # =====================
+
     # EMA
-    # =====================
 
     ema20 = calcola_ema(
         prezzi,
@@ -73,7 +71,7 @@ def analizza_trend(prezzi, vwap):
             "EMA20 sopra EMA50"
         )
 
-    else:
+    elif ema20 < ema50:
 
         score_trend -= 20
 
@@ -82,15 +80,13 @@ def analizza_trend(prezzi, vwap):
         )
 
 
-    # =====================
-    # MOMENTUM
-    # =====================
+
+    # Momentum
 
     if len(prezzi) >= 5:
 
-        variazione = (
-            prezzo - prezzi[-5]
-        )
+        variazione = prezzo - prezzi[-5]
+
 
         if variazione > 0:
 
@@ -100,7 +96,7 @@ def analizza_trend(prezzi, vwap):
                 "Momentum positivo"
             )
 
-        else:
+        elif variazione < 0:
 
             score_trend -= 10
 
@@ -109,9 +105,8 @@ def analizza_trend(prezzi, vwap):
             )
 
 
-    # =====================
-    # CLASSIFICAZIONE
-    # =====================
+
+    # Trend finale
 
     if score_trend >= 25:
 
@@ -126,6 +121,7 @@ def analizza_trend(prezzi, vwap):
     else:
 
         trend = "neutro"
+
 
 
     confidenza = min(
