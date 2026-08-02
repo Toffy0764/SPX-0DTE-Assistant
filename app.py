@@ -15,7 +15,6 @@ st.set_page_config(
     layout="centered"
 )
 
-
 st.title("📈 SPX 0DTE Assistant")
 
 st.write(
@@ -35,19 +34,16 @@ spx = st.number_input(
     value=6500
 )
 
-
 vwap = st.number_input(
     "VWAP giornata",
     value=6480
 )
-
 
 vix = st.number_input(
     "VIX",
     min_value=0.0,
     value=18.0
 )
-
 
 trend = st.selectbox(
     "Trend",
@@ -58,7 +54,6 @@ trend = st.selectbox(
     ]
 )
 
-
 evento_macro = st.selectbox(
     "Evento macro importante",
     [
@@ -67,7 +62,6 @@ evento_macro = st.selectbox(
     ]
 )
 
-
 range_normale = st.selectbox(
     "Range normale",
     [
@@ -75,7 +69,6 @@ range_normale = st.selectbox(
         "no"
     ]
 )
-
 
 gex = st.selectbox(
     "GEX",
@@ -88,7 +81,7 @@ gex = st.selectbox(
 
 
 # =========================
-# GESTIONE RISCHIO
+# RISCHIO
 # =========================
 
 st.subheader("🛡 Gestione rischio")
@@ -161,7 +154,6 @@ evento_macro_livello = st.selectbox(
 )
 
 
-
 # =========================
 # ANALISI
 # =========================
@@ -219,13 +211,9 @@ if st.button("🚀 ANALIZZA GIORNATA"):
         risultato_strike.get(
             "rischio",
             0
-        ),
-        analisi_macro["moltiplicatore_size"]
+        )
     )
 
-
-    # CORRETTO:
-    # adatta_trade richiede solo trade + rischio massimo
 
     trade_adattato = adatta_trade(
         risultato_strike,
@@ -235,7 +223,9 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
     decisione_finale = genera_decisione(
         risultato_score["score"],
+        risultato_strategia["strategia"],
         rischio,
+        analisi_macro,
         trade_adattato
     )
 
@@ -248,15 +238,11 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     st.subheader("📊 ANALISI VWAP")
-    st.write(
-        risultato_vwap
-    )
+    st.write(risultato_vwap)
 
 
     st.subheader("🌍 EVENTO MACRO")
-    st.write(
-        analisi_macro
-    )
+    st.write(analisi_macro)
 
 
     st.subheader("📈 RISULTATO")
@@ -271,7 +257,6 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     st.subheader("Motivazioni")
-
     st.write(
         risultato_score["motivi"]
     )
@@ -289,28 +274,24 @@ if st.button("🚀 ANALIZZA GIORNATA"):
 
 
     st.subheader("💵 TRADE PROPOSTO")
-
     st.write(
         risultato_strike
     )
 
 
     st.subheader("🛡 RISK MANAGER")
-
     st.write(
         rischio
     )
 
 
     st.subheader("🔧 TRADE ADJUSTMENT")
-
     st.write(
         trade_adattato
     )
 
 
     st.subheader("🚦 DECISIONE FINALE")
-
     st.write(
         decisione_finale
     )
