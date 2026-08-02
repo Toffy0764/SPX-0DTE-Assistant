@@ -10,30 +10,63 @@ from adjustment import adatta_trade
 from decision import genera_decisione
 from trend import analizza_trend
 
+from market_data import (
+    get_spx_price,
+    get_intraday_prices,
+    get_vwap
+)
+
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
     layout="centered"
 )
 
+
 st.title("📈 SPX 0DTE Assistant")
 
 
 # =========================
-# INPUT MERCATO
+# MARKET DATA ENGINE
 # =========================
 
-st.subheader("📊 Dati mercato")
+spx = get_spx_price()
 
-spx = st.number_input(
-    "SPX attuale",
-    value=6500
+vwap = get_vwap()
+
+prezzi = get_intraday_prices()
+
+
+st.subheader("📡 MARKET DATA")
+
+st.write(
+    {
+        "SPX": spx,
+        "VWAP": vwap,
+        "ultimi_prezzi": prezzi
+    }
 )
 
-vwap = st.number_input(
-    "VWAP giornata",
-    value=6480
+
+# =========================
+# TREND ENGINE
+# =========================
+
+risultato_trend = analizza_trend(
+    prezzi,
+    vwap
 )
+
+trend = risultato_trend["trend"]
+
+
+
+# =========================
+# INPUT PARAMETRI
+# =========================
+
+st.subheader("⚙️ Parametri")
+
 
 vix = st.number_input(
     "VIX",
@@ -43,13 +76,19 @@ vix = st.number_input(
 
 evento_macro = st.selectbox(
     "Evento macro importante",
-    ["no", "si"]
+    [
+        "no",
+        "si"
+    ]
 )
 
 
 range_normale = st.selectbox(
     "Range normale",
-    ["si", "no"]
+    [
+        "si",
+        "no"
+    ]
 )
 
 
@@ -63,38 +102,10 @@ gex = st.selectbox(
 )
 
 
-# =========================
-# PREZZI TEST
-# =========================
-
-prezzi_test = [
-    spx - 20,
-    spx - 15,
-    spx - 10,
-    spx - 5,
-    spx
-]
-
-
-# =========================
-# TREND ENGINE v1.7
-# =========================
-
-risultato_trend = analizza_trend(
-    prezzi_test,
-    vwap
-)
-
-
-trend = risultato_trend["trend"]
-
 
 # =========================
 # RISCHIO
 # =========================
-
-st.subheader("🛡 Gestione rischio")
-
 
 capitale = st.number_input(
     "Capitale disponibile",
@@ -105,32 +116,37 @@ capitale = st.number_input(
 profilo = st.selectbox(
     "Profilo rischio",
     [
-        "Conservativo (0,25%)",
-        "Moderato (0,50%)",
-        "Bilanciato (0,75%)",
-        "Dinamico (1%)"
+        "Conservativo 0.25%",
+        "Moderato 0.50%",
+        "Bilanciato 0.75%",
+        "Dinamico 1%"
     ]
 )
 
 
-if profilo == "Conservativo (0,25%)":
+if profilo == "Conservativo 0.25%":
+
     rischio_percentuale = 0.25
 
-elif profilo == "Moderato (0,50%)":
+elif profilo == "Moderato 0.50%":
+
     rischio_percentuale = 0.50
 
-elif profilo == "Bilanciato (0,75%)":
+elif profilo == "Bilanciato 0.75%":
+
     rischio_percentuale = 0.75
 
 else:
+
     rischio_percentuale = 1
+
 
 
 # =========================
 # ANALISI
 # =========================
 
-if st.button("🚀 ANALIZZA"):
+if st.button("🚀 ANALIZZA MERCATO"):
 
 
     risultato_vwap = analizza_vwap(
@@ -202,13 +218,15 @@ if st.button("🚀 ANALIZZA"):
     )
 
 
+
     # =====================
     # OUTPUT
     # =====================
 
     st.divider()
 
-    st.subheader("📊 VWAP")
+
+    st.subheader("📊 ANALISI VWAP")
     st.write(risultato_vwap)
 
 
@@ -216,25 +234,43 @@ if st.button("🚀 ANALIZZA"):
     st.write(risultato_trend)
 
 
-    st.subheader("📈 SCORE")
-    st.write(risultato_score)
+    st.subheader("📊 SCORE")
+
+    st.write(
+        risultato_score
+    )
 
 
     st.subheader("🎯 STRATEGIA")
-    st.write(strategia)
+
+    st.write(
+        strategia
+    )
 
 
     st.subheader("💵 TRADE")
-    st.write(trade)
+
+    st.write(
+        trade
+    )
 
 
     st.subheader("🛡 RISK MANAGER")
-    st.write(rischio)
+
+    st.write(
+        rischio
+    )
 
 
-    st.subheader("🔧 ADATTAMENTO")
-    st.write(adattamento)
+    st.subheader("🔧 TRADE ADJUSTMENT")
+
+    st.write(
+        adattamento
+    )
 
 
     st.subheader("🚦 DECISIONE FINALE")
-    st.write(decisione)
+
+    st.write(
+        decisione
+    )
