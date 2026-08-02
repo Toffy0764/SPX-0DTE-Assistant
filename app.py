@@ -224,10 +224,11 @@ if st.button("🚀 ANALIZZA GIORNATA"):
     )
 
 
-    trade_adattato = adatta_trade(
-        risultato_strike,
-        rischio
-    )
+   trade_adattato = adatta_trade(
+    risultato_strike,
+    rischio["rischio_trade"],
+    rischio["rischio_massimo"]
+)
 
 
     decisione_finale = genera_decisione(
