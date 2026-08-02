@@ -1,27 +1,30 @@
 def analizza_trend(prezzo, vwap):
     """
-    Analizza il trend di breve periodo
-    basandosi sulla posizione del prezzo
-    rispetto al VWAP.
+    Trend Engine v1.6
+
+    Analizza:
+    - posizione rispetto al VWAP
+    - distanza dal VWAP
+    - forza del movimento
 
     Output:
-    - trend
-    - punteggio
-    - confidenza
-    - motivazioni
+    trend
+    score
+    confidenza
+    motivazioni
     """
 
     motivazioni = []
 
-
     score_trend = 0
 
 
-    # Prezzo sopra/sotto VWAP
+    # Distanza dal VWAP
+
+    distanza = prezzo - vwap
+
 
     if prezzo > vwap:
-
-        trend = "positivo"
 
         score_trend += 15
 
@@ -29,10 +32,7 @@ def analizza_trend(prezzo, vwap):
             "Prezzo sopra VWAP"
         )
 
-
     elif prezzo < vwap:
-
-        trend = "negativo"
 
         score_trend -= 15
 
@@ -40,32 +40,63 @@ def analizza_trend(prezzo, vwap):
             "Prezzo sotto VWAP"
         )
 
-
     else:
-
-        trend = "neutro"
 
         motivazioni.append(
             "Prezzo sul VWAP"
         )
 
 
-    # Confidenza
+    # Forza distanza dal VWAP
 
-    if score_trend >= 15:
+    distanza_percentuale = (
+        abs(distanza) / vwap
+    ) * 100
 
-        confidenza = 70
+
+    if distanza_percentuale >= 0.30:
+
+        if prezzo > vwap:
+
+            score_trend += 10
+
+            motivazioni.append(
+                "Distanza dal VWAP favorevole"
+            )
+
+        else:
+
+            score_trend -= 10
+
+            motivazioni.append(
+                "Distanza dal VWAP negativa"
+            )
 
 
-    elif score_trend <= -15:
+    # Classificazione trend
 
-        confidenza = 70
+    if score_trend >= 20:
+
+        trend = "positivo"
+
+
+    elif score_trend <= -20:
+
+        trend = "negativo"
 
 
     else:
 
-        confidenza = 50
+        trend = "neutro"
 
+
+
+    # Confidenza
+
+    confidenza = min(
+        abs(score_trend) * 4,
+        95
+    )
 
 
     return {
@@ -75,6 +106,12 @@ def analizza_trend(prezzo, vwap):
         "score_trend": score_trend,
 
         "confidenza": confidenza,
+
+        "distanza_vwap_percentuale":
+            round(
+                distanza_percentuale,
+                2
+            ),
 
         "motivazioni": motivazioni
 
