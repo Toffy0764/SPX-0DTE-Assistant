@@ -63,9 +63,8 @@ st.write(
 )
 
 
-
 # =========================
-# TREND ENGINE
+# TREND ENGINE EMA MOMENTUM
 # =========================
 
 risultato_trend = analizza_trend(
@@ -73,8 +72,16 @@ risultato_trend = analizza_trend(
     vwap
 )
 
-
 trend = risultato_trend["trend"]
+
+
+st.subheader(
+    "📈 TREND ENGINE EMA MOMENTUM v1.9.5"
+)
+
+st.write(
+    risultato_trend
+)
 
 
 
@@ -124,6 +131,9 @@ gex = st.selectbox(
 # RISCHIO
 # =========================
 
+st.subheader("🛡 Gestione rischio")
+
+
 capitale = st.number_input(
     "Capitale disponibile",
     value=100000
@@ -172,6 +182,9 @@ if st.button("🚀 ANALIZZA MERCATO"):
             "Mercato chiuso: analisi operativa sospesa"
         )
 
+        st.stop()
+
+
 
     risultato_vwap = analizza_vwap(
         spx,
@@ -186,6 +199,7 @@ if st.button("🚀 ANALIZZA MERCATO"):
     )
 
 
+
     risultato_score = calcola_score(
         vix,
         trend,
@@ -196,9 +210,11 @@ if st.button("🚀 ANALIZZA MERCATO"):
     )
 
 
+
     macro = controlla_evento_macro(
         "nessuno"
     )
+
 
 
     strategia = scegli_strategia(
@@ -211,10 +227,12 @@ if st.button("🚀 ANALIZZA MERCATO"):
     )
 
 
+
     trade = seleziona_strike(
         spx,
         strategia["strategia"]
     )
+
 
 
     rischio = controlla_rischio(
@@ -227,10 +245,12 @@ if st.button("🚀 ANALIZZA MERCATO"):
     )
 
 
+
     adattamento = adatta_trade(
         trade,
         rischio["rischio_massimo"]
     )
+
 
 
     decisione = genera_decisione(
@@ -252,10 +272,6 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
     st.subheader("📊 ANALISI VWAP")
     st.write(risultato_vwap)
-
-
-    st.subheader("📈 TREND ENGINE v1.7")
-    st.write(risultato_trend)
 
 
     st.subheader("📊 SCORE")
@@ -280,12 +296,4 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
     st.subheader("🚦 DECISIONE FINALE")
 
-    if not stato_mercato["operativita"]:
-
-        st.error(
-            "NON OPERARE - Mercato chiuso"
-        )
-
-    else:
-
-        st.write(decisione)
+    st.write(decisione)
