@@ -18,6 +18,11 @@ from market_data import (
 
 from market_status import market_status
 
+from journal import (
+    salva_analisi,
+    crea_record_base
+)
+
 
 st.set_page_config(
     page_title="SPX 0DTE Assistant",
@@ -64,7 +69,7 @@ st.write(
 
 
 # =========================
-# TREND ENGINE v1.9.7
+# TREND ENGINE
 # =========================
 
 risultato_trend = analizza_trend(
@@ -266,6 +271,25 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
 
     # =====================
+    # CREA RECORD JOURNAL
+    # =====================
+
+    record = crea_record_base(
+        spx,
+        vix,
+        vwap,
+        trend,
+        risultato_score,
+        strategia,
+        trade,
+        rischio,
+        decisione,
+        risultato_trend
+    )
+
+
+
+    # =====================
     # OUTPUT
     # =====================
 
@@ -276,32 +300,41 @@ if st.button("🚀 ANALIZZA MERCATO"):
     st.write(risultato_vwap)
 
 
-
     st.subheader("📊 SCORE")
     st.write(risultato_score)
-
 
 
     st.subheader("🎯 STRATEGIA")
     st.write(strategia)
 
 
-
     st.subheader("💵 TRADE PROPOSTO")
     st.write(trade)
-
 
 
     st.subheader("🛡 RISK MANAGER")
     st.write(rischio)
 
 
-
     st.subheader("🔧 TRADE ADJUSTMENT")
     st.write(adattamento)
 
 
-
     st.subheader("🚦 DECISIONE FINALE")
-
     st.write(decisione)
+
+
+
+    # =====================
+    # SALVATAGGIO JOURNAL
+    # =====================
+
+    st.divider()
+
+    if st.button("💾 SALVA ANALISI"):
+
+        salva_analisi(record)
+
+        st.success(
+            "✅ Analisi salvata nel Trading Journal"
+        )
