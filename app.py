@@ -18,10 +18,8 @@ from market_data import (
 
 from market_status import market_status
 
-from journal import (
-    salva_analisi,
-    crea_record_base
-)
+from journal import crea_record_base
+from google_journal import salva_su_google_sheet
 
 
 st.set_page_config(
@@ -77,17 +75,14 @@ risultato_trend = analizza_trend(
     vwap
 )
 
-
 trend = risultato_trend["trend"]
 
 
 st.subheader(
-    "📈 TREND ENGINE RISK ADJUSTED v1.9.7"
+    "📈 TREND ENGINE"
 )
 
-st.write(
-    risultato_trend
-)
+st.write(risultato_trend)
 
 
 
@@ -106,19 +101,13 @@ vix = st.number_input(
 
 evento_macro = st.selectbox(
     "Evento macro importante",
-    [
-        "no",
-        "si"
-    ]
+    ["no", "si"]
 )
 
 
 range_normale = st.selectbox(
     "Range normale",
-    [
-        "si",
-        "no"
-    ]
+    ["si", "no"]
 )
 
 
@@ -136,9 +125,6 @@ gex = st.selectbox(
 # =========================
 # RISCHIO
 # =========================
-
-st.subheader("🛡 Gestione rischio")
-
 
 capitale = st.number_input(
     "Capitale disponibile",
@@ -196,7 +182,6 @@ if st.button("🚀 ANALIZZA MERCATO"):
         spx,
         vwap
     )
-
 
 
     sopra_vwap = (
@@ -270,10 +255,6 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
 
 
-    # =====================
-    # CREA RECORD JOURNAL
-    # =====================
-
     record = crea_record_base(
         spx,
         vix,
@@ -289,14 +270,10 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
 
 
-    # =====================
-    # OUTPUT
-    # =====================
-
     st.divider()
 
 
-    st.subheader("📊 ANALISI VWAP")
+    st.subheader("📊 VWAP")
     st.write(risultato_vwap)
 
 
@@ -308,33 +285,38 @@ if st.button("🚀 ANALIZZA MERCATO"):
     st.write(strategia)
 
 
-    st.subheader("💵 TRADE PROPOSTO")
+    st.subheader("💵 TRADE")
     st.write(trade)
 
 
-    st.subheader("🛡 RISK MANAGER")
+    st.subheader("🛡 RISCHIO")
     st.write(rischio)
 
 
-    st.subheader("🔧 TRADE ADJUSTMENT")
+    st.subheader("🔧 ADJUSTMENT")
     st.write(adattamento)
 
 
-    st.subheader("🚦 DECISIONE FINALE")
+    st.subheader("🚦 DECISIONE")
     st.write(decisione)
 
 
 
-    # =====================
-    # SALVATAGGIO JOURNAL
-    # =====================
-
     st.divider()
+
 
     if st.button("💾 SALVA ANALISI"):
 
-        salva_analisi(record)
+        salvato = salva_su_google_sheet(record)
 
-        st.success(
-            "✅ Analisi salvata nel Trading Journal"
-        )
+        if salvato:
+
+            st.success(
+                "✅ Analisi salvata su Google Sheets"
+            )
+
+        else:
+
+            st.error(
+                "❌ Errore salvataggio Google Sheets"
+            )
