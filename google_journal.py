@@ -1,7 +1,7 @@
 import requests
 
 
-GOOGLE_SHEET_URL = "INSERISCI_QUI_IL_TUO_URL"
+GOOGLE_SHEET_URL = https://script.google.com/macros/s/AKfycbwxQk_PWdpbB9s39r18kdVE4YJDIpHmSPXy4vZpW9u8eXV8NxiAWL5wNvIMLcmty3mq/exec
 
 
 def salva_su_google_sheet(dati):
@@ -14,10 +14,7 @@ def salva_su_google_sheet(dati):
             timeout=10
         )
 
-        if response.text == "OK":
-            return True
-
-        return False
+        return response.text == "OK"
 
 
     except Exception as e:
