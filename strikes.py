@@ -1,18 +1,17 @@
 def seleziona_strike(spx, strategia):
 
-    risultato = {}
-
     if strategia == "BULL PUT SPREAD":
 
         short_strike = round(spx - 40, -1)
         long_strike = short_strike - 10
 
-        risultato = {
+        return {
             "strategia": strategia,
             "vendita": f"PUT {short_strike}",
             "acquisto": f"PUT {long_strike}",
             "credito_stimato": 1.20,
-            "rischio": 880
+            "rischio": 880,
+            "valido": True
         }
 
     elif strategia == "BEAR CALL SPREAD":
@@ -20,29 +19,35 @@ def seleziona_strike(spx, strategia):
         short_strike = round(spx + 40, -1)
         long_strike = short_strike + 10
 
-        risultato = {
+        return {
             "strategia": strategia,
             "vendita": f"CALL {short_strike}",
             "acquisto": f"CALL {long_strike}",
             "credito_stimato": 1.20,
-            "rischio": 880
+            "rischio": 880,
+            "valido": True
         }
 
     elif strategia == "IRON CONDOR":
 
-        risultato = {
+        return {
             "strategia": strategia,
-            "nota": "Configurazione iron condor da definire"
+            "vendita": "",
+            "acquisto": "",
+            "credito_stimato": 0,
+            "rischio": 0,
+            "nota": "Configurazione Iron Condor non ancora implementata",
+            "valido": False
         }
 
     else:
 
-        risultato = {
+        return {
             "strategia": "NO TRADE",
-            "nota": "Nessuna operazione proposta"
+            "vendita": "",
+            "acquisto": "",
+            "credito_stimato": 0,
+            "rischio": 0,
+            "nota": "Nessuna operazione proposta",
+            "valido": False
         }
-
-    return risultato
-    
-
-        
