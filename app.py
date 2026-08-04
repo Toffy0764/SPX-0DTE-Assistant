@@ -144,24 +144,17 @@ profilo = st.selectbox(
 
 
 if profilo == "Conservativo 0.25%":
-
     rischio_percentuale = 0.25
 
 elif profilo == "Moderato 0.50%":
-
     rischio_percentuale = 0.50
 
 elif profilo == "Bilanciato 0.75%":
-
     rischio_percentuale = 0.75
 
 else:
-
     rischio_percentuale = 1
-
-
-
-# =========================
+    # =========================
 # ANALISI
 # =========================
 
@@ -227,14 +220,37 @@ if st.button("🚀 ANALIZZA MERCATO"):
 
 
 
-    rischio = controlla_rischio(
-        capitale,
-        rischio_percentuale,
-        trade.get(
-            "rischio",
-            0
+    # =========================
+    # RISK MANAGER CORRETTO
+    # =========================
+
+    if trade.get("valido", False):
+
+        rischio = controlla_rischio(
+            capitale,
+            rischio_percentuale,
+            trade["rischio"]
         )
-    )
+
+    else:
+
+        rischio = {
+
+            "stato": "NO TRADE",
+
+            "rischio_massimo": 0,
+
+            "rischio_trade": 0,
+
+            "rapporto_rischio": 0,
+
+            "contratti": 0,
+
+            "motivo": trade.get(
+                "nota",
+                "Nessuna operazione proposta"
+            )
+        }
 
 
 
