@@ -14,14 +14,29 @@ def calcola_score(vix, trend, sopra_vwap, evento_macro, range_normale, gex):
         motivi.append("VIX elevato")
 
     # Trend e VWAP
-    if trend == "positivo" and sopra_vwap:
-        score += 25
-        motivi.append("Trend positivo sopra VWAP")
-    elif trend == "neutro":
-        score += 12
-        motivi.append("Trend neutro")
-    else:
-        motivi.append("Trend non favorevole")
+
+trend_positivo = [
+    "positivo",
+    "BULLISH",
+    "STRONG BULLISH"
+]
+
+trend_negativo = [
+    "negativo",
+    "BEARISH",
+    "STRONG BEARISH"
+]
+
+if trend in trend_positivo and sopra_vwap:
+    score += 25
+    motivi.append(f"Trend favorevole ({trend}) sopra VWAP")
+
+elif trend == "neutro":
+    score += 12
+    motivi.append("Trend neutro")
+
+else:
+    motivi.append(f"Trend non favorevole ({trend})")
 
     # Evento macro
     if not evento_macro:
