@@ -336,7 +336,7 @@ if st.button("🚀 ANALIZZA MERCATO"):
             st.error(
                 "❌ Errore salvataggio Google Sheets"
             )
-            
+
 # =========================
 # DIAGNOSTICA
 # =========================
