@@ -336,3 +336,132 @@ if st.button("🚀 ANALIZZA MERCATO"):
             st.error(
                 "❌ Errore salvataggio Google Sheets"
             )
+            
+# =========================
+# DIAGNOSTICA
+# =========================
+
+st.divider()
+
+st.subheader("🔧 DIAGNOSTICA")
+
+
+# Market Status
+
+try:
+
+    stato_test = market_status()
+
+    st.success(
+        "🟢 Market Status OK"
+    )
+
+    st.write(stato_test)
+
+except Exception as e:
+
+    st.error(
+        f"🔴 Market Status errore: {e}"
+    )
+
+
+# Yahoo Finance / Market Data
+
+try:
+
+    spx_test = get_spx_price()
+
+    if spx_test:
+
+        st.success(
+            f"🟢 Yahoo Finance OK - SPX: {spx_test}"
+        )
+
+    else:
+
+        st.warning(
+            "🟡 SPX non disponibile"
+        )
+
+except Exception as e:
+
+    st.error(
+        f"🔴 Market Data errore: {e}"
+    )
+
+
+# VWAP
+
+try:
+
+    vwap_test = get_vwap()
+
+    if vwap_test:
+
+        st.success(
+            f"🟢 VWAP OK - {vwap_test}"
+        )
+
+    else:
+
+        st.warning(
+            "🟡 VWAP non disponibile"
+        )
+
+except Exception as e:
+
+    st.error(
+        f"🔴 VWAP errore: {e}"
+    )
+
+
+# Google Sheets
+
+st.subheader("📄 Google Sheets")
+
+
+if st.button("🧪 TEST GOOGLE SHEETS"):
+
+    record_test = {
+
+        "data_ora": "TEST",
+
+        "SPX": 6500,
+
+        "VIX": 18,
+
+        "VWAP": 6495,
+
+        "trend": "TEST",
+
+        "score": 100,
+
+        "strategia": "TEST",
+
+        "trade": "TEST",
+
+        "rischio": "TEST",
+
+        "decisione": "TEST",
+
+        "note": "Diagnostica"
+
+    }
+
+
+    risultato = salva_su_google_sheet(
+        record_test
+    )
+
+
+    if risultato:
+
+        st.success(
+            "🟢 Google Sheets OK"
+        )
+
+    else:
+
+        st.error(
+            "🔴 Google Sheets NON raggiungibile"
+        )
